@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, make_response
 import subprocess
 import json
 import logging
@@ -23,7 +23,9 @@ def latency_check_status():
     else: 
         obj = { "success": True, "message": result.stdout.decode("utf-8", "ignore") }
     logger.debug("message="+obj["message"])
-    return json.dumps(obj, indent=4)
+    resp = make_response(json.dumps(obj, indent=4))
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
 
 
 @app.route("/service/latency_check/start", methods=['GET'])
@@ -32,14 +34,16 @@ def latency_check_start():
     result = subprocess.run(["systemctl", "start", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
     if result.returncode != 0:
-        obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
+        obj = { "success": 'false', "message": result.stderr.decode("utf-8", "ignore") }
     else: 
-        obj = { "success": True, "message": result.stdout.decode("utf-8", "ignore") }
+        obj = { "success": 'true', "message": result.stdout.decode("utf-8", "ignore") }
     
     if obj["message"] != "":
         logger.debug("message="+obj["message"])
 
-    return json.dumps(obj, indent=4)
+    resp = make_response(json.dumps(obj, indent=4))
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
 
 
 @app.route("/service/latency_check/stop", methods=['GET'])
