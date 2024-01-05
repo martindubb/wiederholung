@@ -22,7 +22,7 @@ def healthz():
 @app.route("/service/latency_check", methods=['GET'])
 def latency_check_status():
     logger.info('ip=%s method=%s scheme=%s path=%s', request.remote_addr, request.method, request.scheme, request.full_path)
-    result = subprocess.run(["systemctl", "status", "--user", "latency_check.service"], capture_output=True)
+    result = subprocess.run(["/usr/bin/systemctl", "status", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
     if result.returncode != 0 and result.returncode != 3: # rc=3 => unit not active 
         obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
@@ -37,7 +37,7 @@ def latency_check_status():
 @app.route("/service/latency_check/start", methods=['GET'])
 def latency_check_start():
     logger.info('ip=%s method=%s scheme=%s path=%s', request.remote_addr, request.method, request.scheme, request.full_path)
-    result = subprocess.run(["systemctl", "start", "--user", "latency_check.service"], capture_output=True)
+    result = subprocess.run(["/usr/bin/systemctl", "start", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
     if result.returncode != 0:
         obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
@@ -55,7 +55,7 @@ def latency_check_start():
 @app.route("/service/latency_check/stop", methods=['GET'])
 def latency_check_stop():
     logger.info('ip=%s method=%s scheme=%s path=%s', request.remote_addr, request.method, request.scheme, request.full_path)
-    result = subprocess.run(["systemctl", "stop", "--user", "latency_check.service"], capture_output=True)
+    result = subprocess.run(["/usr/bin/systemctl", "stop", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
     if result.returncode != 0:
         obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
