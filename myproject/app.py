@@ -13,12 +13,18 @@ logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 
+@app.route("/healthz", methods=['GET'])
+def healthz():
+    logger.info('ip=%s method=%s scheme=%s path=%s', request.remote_addr, request.method, request.scheme, request.full_path)
+    resp = make_response('OK')
+    return resp
+
 @app.route("/service/latency_check", methods=['GET'])
 def latency_check_status():
     logger.info('ip=%s method=%s scheme=%s path=%s', request.remote_addr, request.method, request.scheme, request.full_path)
     result = subprocess.run(["systemctl", "status", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
-    if result.returncode != 0 and result.returncode != 3:
+    if result.returncode != 0 and result.returncode != 3: # rc=3 => unit not active 
         obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
     else: 
         obj = { "success": True, "message": result.stdout.decode("utf-8", "ignore") }
@@ -34,9 +40,9 @@ def latency_check_start():
     result = subprocess.run(["systemctl", "start", "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
     if result.returncode != 0:
-        obj = { "success": 'false', "message": result.stderr.decode("utf-8", "ignore") }
+        obj = { "success": False, "message": result.stderr.decode("utf-8", "ignore") }
     else: 
-        obj = { "success": 'true', "message": result.stdout.decode("utf-8", "ignore") }
+        obj = { "success": True, "message": result.stdout.decode("utf-8", "ignore") }
     
     if obj["message"] != "":
         logger.debug("message="+obj["message"])
@@ -59,4 +65,6 @@ def latency_check_stop():
     if obj["message"] != "":
         logger.debug("message="+obj["message"])
 
-    return json.dumps(obj, indent=4)
+    resp = make_response(json.dumps(obj, indent=4))
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
