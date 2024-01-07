@@ -49,7 +49,7 @@
 
 - name: Install specified python requirements
   ansible.builtin.pip:
-    requirements: home/ubuntu/myproject/requirements.txt
+    requirements: /home/ubuntu/myproject/requirements.txt
 
 - name: start flask app
   shell: "flask run --host 0.0.0.0"
