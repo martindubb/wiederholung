@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Variablen für den Host und den Dateinamen
-FALLBACK="google.com" # Standard-Host, kann überschrieben werden
-LATENCY_FILE="/tmp/latency_data.txt" # Dateiname für die Latenzdaten
+FALLBACK="google.com"
+LATENCY_FILE="/tmp/latency_data.txt"
 
 # Funktion, um die durchschnittliche Latenz zu messen
 measure_latency() {
@@ -14,7 +13,7 @@ measure_latency() {
 # Funktion, um die gemessene Latenz in eine Datei zu schreiben
 write_latency_to_file() {
     # Ruft die Funktion measure_latency auf und leitet das Ergebnis in eine Datei um
-    local latency=$(measure_latency "bing.comsodfhsdofdh")
+    local latency=$(measure_latency "bing.com")
     if [ -z "$latency" ]; then
 	  local latency=$(measure_latency $FALLBACK)
     fi
@@ -23,7 +22,10 @@ write_latency_to_file() {
 
 # Hauptfunktion
 main() {
-    write_latency_to_file
+    while true; do
+        write_latency_to_file;
+        sleep 20;
+    done
 }
 
 # Ausführung der Hauptfunktion

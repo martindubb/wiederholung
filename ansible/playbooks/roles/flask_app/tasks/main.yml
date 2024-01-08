@@ -11,13 +11,16 @@
     - python3-pip 
     - python3-flask
 
+# latency check
 - name: ensure folder for systemd unit
+  become_user: ubuntu
   ansible.builtin.file:
     path: /home/ubuntu/.config/systemd/user
     state: directory
     mode: '0755'
 
 - name: copy latency_check files 
+  become_user: ubuntu
   copy:
     src: "files/{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -25,20 +28,36 @@
   - { src: 'latency_check.sh', dest: '/home/ubuntu/latency_check.sh' }
   - { src: 'latency_check.service', dest: '/home/ubuntu/.config/systemd/user/latency_check.service' }
 
+- name: allow execute on script
+  become_user: ubuntu
+  ansible.builtin.file:
+    path: /home/ubuntu/latency_check.sh
+    owner: ubuntu
+    group: ubuntu
+    mode: '0774'
+
 - name: start latency_check.service
+  become_user: ubuntu
   ansible.builtin.systemd_service:
     state: started
-    name: /home/ubuntu/.config/systemd/user/latency_check.service
+    name: latency_check.service
     scope: user
     enabled: yes
 
-- name: ensure folder for flask app
+# flask 
+- name: ensure folders for flask app
+  become_user: ubuntu
   ansible.builtin.file:
-    path: /home/ubuntu/myproject
+    path: "{{ item }}"
     state: directory
     mode: '0755'
+    owner: ubuntu
+  with_items:
+  - /home/ubuntu/myproject
+  - /var/log/myproject
 
 - name: Download flask app
+  become_user: ubuntu
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "{{ item.dest }}"
@@ -53,5 +72,9 @@
 
 - name: start flask app
   shell: "flask run --host 0.0.0.0"
+  become_user: ubuntu
+  shell: |
+    nohup flask run --host 0.0.0.0 &
+    echo $! > /home/ubuntu/.flaskpid
   args:
     chdir: /home/ubuntu/myproject
