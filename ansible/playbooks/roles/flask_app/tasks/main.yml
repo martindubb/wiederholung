@@ -71,7 +71,6 @@
     requirements: /home/ubuntu/myproject/requirements.txt
 
 - name: start flask app
-  shell: "flask run --host 0.0.0.0"
   become_user: ubuntu
   shell: |
     nohup flask run --host 0.0.0.0 &
