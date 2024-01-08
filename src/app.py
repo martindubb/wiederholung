@@ -46,7 +46,7 @@ def latency_check_stop():
 
 # helper function for running systemctl
 def call_systemctl(action="status"):
-    result = subprocess.run(["/usr/bin/sudo", "/usr/bin/systemctl", action, "latency_check.service"], capture_output=True)
+    result = subprocess.run(["/usr/bin/systemctl", action, "--user", "latency_check.service"], capture_output=True)
     logger.info("returncode="+str(result.returncode))
 
     if result.returncode == 0 or (action == "status" and result.returncode == 3): # rc=3 => unit not active 
