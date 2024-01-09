@@ -10,4 +10,5 @@ terraform {
 
 provider "aws" {
   profile = "techstarter"
+  region  = "eu-central-1"
 }

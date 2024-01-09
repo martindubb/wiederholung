@@ -67,6 +67,7 @@
     - { url: 'https://raw.githubusercontent.com/martindubb/wiederholung/main/myproject/requirements.txt', dest: '/home/ubuntu/myproject/requirements.txt', mode: '0644' }
 
 - name: Install specified python requirements
+  become_user: ubuntu
   ansible.builtin.pip:
     requirements: /home/ubuntu/myproject/requirements.txt
 

@@ -7,6 +7,15 @@ output "instance_ip" {
   value = module.tf_ec2.instance_public_ips
 }
 
+output "inventory" {
+  value = module.tf_ec2.inventory
+}
+
+output "private_key" {
+  value = module.tf_ec2.private_key
+  sensitive = true
+}
+
 output "docker_private_registry" {
-  value = myecr.repository_url
+  value = aws_ecr_repository.myecr.repository_url
 }
