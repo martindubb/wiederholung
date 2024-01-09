@@ -11,6 +11,7 @@
     - python3-pip 
     - python3-flask
 
+# latency check
 - name: ensure folder for systemd unit
   become_user: ubuntu
   ansible.builtin.file:
@@ -43,12 +44,17 @@
     scope: user
     enabled: yes
 
-- name: ensure folder for flask app
+# flask 
+- name: ensure folders for flask app
   become_user: ubuntu
   ansible.builtin.file:
-    path: /home/ubuntu/myproject
+    path: "{{ item }}"
     state: directory
     mode: '0755'
+    owner: ubuntu
+  with_items:
+  - /home/ubuntu/myproject
+  - /var/log/myproject
 
 - name: Download flask app
   become_user: ubuntu

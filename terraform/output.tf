@@ -15,3 +15,7 @@ output "private_key" {
   value = module.tf_ec2.private_key
   sensitive = true
 }
+
+output "docker_private_registry" {
+  value = aws_ecr_repository.myecr.repository_url
+}
